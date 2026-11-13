@@ -52,3 +52,7 @@ pytest tests
 ```
 
 Die Vorschlags- und Konfliktlogik in `analysis.py` kommt ohne Home Assistant aus und lässt sich deshalb direkt testen.
+
+## Lizenz
+
+MIT, siehe [LICENSE](LICENSE).
