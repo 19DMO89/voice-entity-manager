@@ -61,6 +61,15 @@ const STRINGS = {
     loading: "Lade Entitäten …",
     resetFilters: "Filter zurücksetzen",
     confirmBulk: "Freigabe für {n} Entitäten ändern?",
+    exportPdf: "PDF-Export",
+    exportTitle: "Freigegebene Sprachentitäten",
+    exportFile: "Sprachentitaeten",
+    noDevice: "Ohne Gerät",
+    generated: "Erstellt am",
+    areasCount: "Bereiche",
+    devicesCount: "Geräte",
+    noAliases: "–",
+    nothingExposed: "Es sind keine Entitäten freigegeben.",
   },
   en: {
     title: "Voice entities",
@@ -122,8 +131,89 @@ const STRINGS = {
     loading: "Loading entities …",
     resetFilters: "Reset filters",
     confirmBulk: "Change exposure for {n} entities?",
+    exportPdf: "PDF export",
+    exportTitle: "Exposed voice entities",
+    exportFile: "Voice-entities",
+    noDevice: "No device",
+    generated: "Generated on",
+    areasCount: "areas",
+    devicesCount: "devices",
+    noAliases: "–",
+    nothingExposed: "No entities are exposed.",
   },
 };
+
+const DOMAIN_ICONS = {
+  light: "mdi:lightbulb",
+  switch: "mdi:toggle-switch-variant",
+  "switch.outlet": "mdi:power-socket-de",
+  fan: "mdi:fan",
+  cover: "mdi:window-shutter",
+  "cover.blind": "mdi:blinds-horizontal",
+  "cover.curtain": "mdi:curtains",
+  "cover.garage": "mdi:garage",
+  "cover.gate": "mdi:gate",
+  "cover.door": "mdi:door",
+  "cover.awning": "mdi:awning-outline",
+  climate: "mdi:thermostat",
+  lock: "mdi:lock",
+  media_player: "mdi:cast",
+  "media_player.tv": "mdi:television",
+  "media_player.speaker": "mdi:speaker",
+  "media_player.receiver": "mdi:audio-video",
+  vacuum: "mdi:robot-vacuum",
+  lawn_mower: "mdi:robot-mower",
+  valve: "mdi:valve",
+  water_heater: "mdi:water-boiler",
+  humidifier: "mdi:air-humidifier",
+  alarm_control_panel: "mdi:shield-home",
+  siren: "mdi:bullhorn",
+  camera: "mdi:cctv",
+  scene: "mdi:palette",
+  script: "mdi:script-text",
+  automation: "mdi:robot",
+  input_boolean: "mdi:toggle-switch-outline",
+  input_button: "mdi:gesture-tap-button",
+  button: "mdi:gesture-tap-button",
+  input_number: "mdi:ray-vertex",
+  number: "mdi:ray-vertex",
+  input_select: "mdi:format-list-bulleted",
+  select: "mdi:format-list-bulleted",
+  input_text: "mdi:form-textbox",
+  todo: "mdi:clipboard-list",
+  weather: "mdi:weather-partly-cloudy",
+  timer: "mdi:timer-outline",
+  person: "mdi:account",
+  device_tracker: "mdi:map-marker",
+  calendar: "mdi:calendar",
+  update: "mdi:package-up",
+  event: "mdi:gesture-double-tap",
+  image: "mdi:image",
+  zone: "mdi:map-marker-radius",
+  sun: "mdi:white-balance-sunny",
+  sensor: "mdi:eye",
+  "sensor.temperature": "mdi:thermometer",
+  "sensor.humidity": "mdi:water-percent",
+  "sensor.power": "mdi:flash",
+  "sensor.energy": "mdi:lightning-bolt",
+  "sensor.illuminance": "mdi:brightness-5",
+  "sensor.battery": "mdi:battery",
+  "sensor.carbon_dioxide": "mdi:molecule-co2",
+  "sensor.pressure": "mdi:gauge",
+  binary_sensor: "mdi:radiobox-marked",
+  "binary_sensor.door": "mdi:door",
+  "binary_sensor.window": "mdi:window-closed",
+  "binary_sensor.motion": "mdi:motion-sensor",
+  "binary_sensor.occupancy": "mdi:home-account",
+  "binary_sensor.presence": "mdi:home-account",
+  "binary_sensor.smoke": "mdi:smoke-detector",
+  "binary_sensor.moisture": "mdi:water-alert",
+  "binary_sensor.opening": "mdi:square-outline",
+  "binary_sensor.battery": "mdi:battery-alert",
+};
+
+const iconFor = (e) =>
+  e.icon || DOMAIN_ICONS[`${e.domain}.${e.device_class}`] || DOMAIN_ICONS[e.domain] || "mdi:help-circle-outline";
 
 const PAGE_SIZE = 100;
 const STORAGE_KEY = "voice_entity_filters";
@@ -281,6 +371,7 @@ class VoiceEntityPanel extends HTMLElement {
         <label class="assistant">${esc(t.assistant)}
           <select id="assistant"></select>
         </label>
+        <button id="export" class="export-btn" title="${esc(t.exportPdf)}">⇩ ${esc(t.exportPdf)}</button>
         <button id="reload" class="icon-btn" title="${esc(t.reload)}">⟳</button>
       </div>
       <div class="content">
@@ -351,6 +442,7 @@ class VoiceEntityPanel extends HTMLElement {
     }
 
     root.getElementById("reload").addEventListener("click", () => this._load());
+    root.getElementById("export").addEventListener("click", () => this._exportPdf());
     root.getElementById("assistant").addEventListener("change", (ev) => {
       this._assistant = ev.target.value;
       this._selected.clear();
@@ -563,7 +655,10 @@ class VoiceEntityPanel extends HTMLElement {
           <a href="#" data-action="more-info" data-id="${id}">${esc(e.name)}</a>
           <div class="sub">${id}</div>${badges}
         </td>
-        <td data-label="${esc(t.type)}">${esc(e.type_label)}<div class="sub">${esc(e.domain)}${e.device_class ? ` · ${esc(e.device_class)}` : ""}</div></td>
+        <td data-label="${esc(t.type)}" class="type">
+          <ha-icon icon="${esc(iconFor(e))}"></ha-icon>
+          <div>${esc(e.type_label)}<div class="sub">${esc(e.domain)}${e.device_class ? ` · ${esc(e.device_class)}` : ""}</div></div>
+        </td>
         <td data-label="${esc(t.device)}">${esc(e.device_name || "–")}<div class="sub">${esc(
       [e.manufacturer, e.model].filter(Boolean).join(" · ") || e.platform || ""
     )}</div></td>
@@ -606,6 +701,34 @@ class VoiceEntityPanel extends HTMLElement {
     }
   }
 
+  _exportPdf() {
+    if (!this._data) return;
+    const t = this._t;
+    const lang = this._hass.language || "en";
+    const html = buildExportHtml(this._data.entities, {
+      t,
+      lang,
+      assistantLabel: t[this._assistant] || this._assistant,
+      date: new Date(),
+    });
+    // Print via a hidden iframe – the browser's print dialog offers "Save as PDF".
+    const frame = document.createElement("iframe");
+    frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    document.body.appendChild(frame);
+    const doc = frame.contentDocument;
+    doc.open();
+    doc.write(html);
+    doc.close();
+    const win = frame.contentWindow;
+    const cleanup = () => setTimeout(() => frame.remove(), 1000);
+    win.addEventListener("afterprint", cleanup);
+    setTimeout(() => {
+      win.focus();
+      win.print();
+      setTimeout(cleanup, 60000); // fallback if afterprint never fires
+    }, 250);
+  }
+
   _addAlias(id, alias) {
     alias = (alias || "").trim();
     const e = this._entity(id);
@@ -613,6 +736,103 @@ class VoiceEntityPanel extends HTMLElement {
     if (e.aliases.some((a) => a.toLowerCase() === alias.toLowerCase())) return;
     this._update(id, { aliases: [...e.aliases, alias] });
   }
+}
+
+/** Printable HTML: Area → Device → Entities with aliases (only exposed, enabled entities). */
+function buildExportHtml(entities, { t, lang, assistantLabel, date }) {
+  const cmp = (a, b) => a.localeCompare(b, lang, { sensitivity: "base" });
+  const exposed = entities.filter((e) => e.exposed && !e.disabled);
+
+  const areas = new Map();
+  for (const e of exposed) {
+    const areaKey = e.area_id || "";
+    if (!areas.has(areaKey)) areas.set(areaKey, { name: e.area_name || t.noArea, floor: e.floor_name, devices: new Map() });
+    const devices = areas.get(areaKey).devices;
+    const devKey = e.device_id || "";
+    if (!devices.has(devKey))
+      devices.set(devKey, {
+        name: e.device_name || t.noDevice,
+        sub: [e.manufacturer, e.model].filter(Boolean).join(" · "),
+        entities: [],
+      });
+    devices.get(devKey).entities.push(e);
+  }
+
+  // Named groups alphabetically, "no area"/"no device" at the end.
+  const sorted = (map) => [...map.entries()].sort(([ka, a], [kb, b]) => (!ka) - (!kb) || cmp(a.name, b.name));
+  const deviceCount = [...areas.values()].reduce((n, a) => n + [...a.devices.keys()].filter(Boolean).length, 0);
+  const dateStr = date.toLocaleString(lang, { dateStyle: "long", timeStyle: "short" });
+  const isoDate = date.toISOString().slice(0, 10);
+
+  const body = sorted(areas)
+    .map(([, area]) => {
+      const devices = sorted(area.devices)
+        .map(([, dev]) => {
+          const rows = dev.entities
+            .sort((a, b) => cmp(a.name, b.name))
+            .map(
+              (e) => `<tr>
+                <td class="ename">${esc(e.name)}<div class="eid">${esc(e.entity_id)}</div></td>
+                <td class="etype">${esc(e.type_label)}</td>
+                <td class="ealias">${e.aliases.length ? e.aliases.map((a) => `<span class="alias">${esc(a)}</span>`).join(" ") : `<span class="none">${esc(t.noAliases)}</span>`}</td>
+              </tr>`
+            )
+            .join("");
+          return `<section class="device">
+              <h3>${esc(dev.name)}${dev.sub ? ` <small>${esc(dev.sub)}</small>` : ""}</h3>
+              <table>
+                <thead><tr><th>${esc(t.entity)}</th><th>${esc(t.type)}</th><th>${esc(t.aliases)}</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </section>`;
+        })
+        .join("");
+      return `<section class="area">
+          <h2>${esc(area.name)}${area.floor ? ` <small>${esc(area.floor)}</small>` : ""}</h2>
+          ${devices}
+        </section>`;
+    })
+    .join("");
+
+  return `<!doctype html>
+<html lang="${esc(lang)}">
+<head>
+<meta charset="utf-8" />
+<title>${esc(t.exportFile)}-${isoDate}</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10pt; color: #1c1c1c; margin: 0; }
+  header { border-bottom: 2px solid #03a9f4; padding-bottom: 6px; margin-bottom: 12px; }
+  h1 { font-size: 18pt; margin: 0 0 2px; font-weight: 600; }
+  .meta { color: #666; font-size: 9pt; }
+  .area { margin-bottom: 14px; }
+  h2 { font-size: 13pt; margin: 14px 0 6px; padding: 4px 8px; background: #e8f4fd; border-left: 4px solid #03a9f4; break-after: avoid; }
+  h2 small, h3 small { font-weight: 400; color: #666; font-size: 9pt; }
+  .device { margin: 0 0 10px 10px; break-inside: avoid; }
+  h3 { font-size: 11pt; margin: 6px 0 4px; break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 8.5pt; color: #666; font-weight: 500; border-bottom: 1px solid #ccc; padding: 3px 6px; }
+  td { padding: 4px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  .ename { width: 38%; font-weight: 500; }
+  .eid { font-weight: 400; color: #888; font-size: 8pt; font-family: Consolas, monospace; }
+  .etype { width: 17%; color: #444; }
+  .alias { display: inline-block; padding: 1px 7px; margin: 1px 2px 1px 0; border-radius: 9px; background: #e3f2fd; border: 1px solid #b3dbf7; font-size: 9pt; }
+  .none { color: #aaa; }
+  .empty { color: #666; margin-top: 24px; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>${esc(t.exportTitle)} – ${esc(assistantLabel)}</h1>
+    <div class="meta">${esc(t.generated)} ${esc(dateStr)} · ${exposed.length} ${esc(t.total)} · ${[...areas.keys()].filter(Boolean).length} ${esc(t.areasCount)} · ${deviceCount} ${esc(t.devicesCount)}</div>
+  </header>
+  ${exposed.length ? body : `<p class="empty">${esc(t.nothingExposed)}</p>`}
+</body>
+</html>`;
 }
 
 const STYLE = `
@@ -692,6 +912,11 @@ const STYLE = `
   .conflict a { color: inherit; }
   .dim { opacity: .55; }
   .ok { color: var(--success-color, #43a047); }
+  td.type { white-space: nowrap; }
+  td.type > * { vertical-align: top; display: inline-block; }
+  td.type ha-icon { --mdc-icon-size: 22px; color: var(--state-icon-color, var(--paper-item-icon-color, #44739e)); margin-right: 8px; }
+  tr.is-exposed td.type ha-icon { color: var(--state-active-color, var(--primary-color)); }
+  .export-btn { background: none; border: 1px solid currentColor; color: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; }
   .muted { color: var(--secondary-text-color); }
   .empty { text-align: center; color: var(--secondary-text-color); padding: 24px; }
   .more { text-align: center; margin: 12px 0; }

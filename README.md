@@ -18,6 +18,8 @@ Eine Home-Assistant-Integration (installierbar über HACS), die ein eigenes Seit
 - **Filter**: Freitextsuche, Typ, Bereich (auch „ohne Bereich“), Etage, Integration, freigegeben ja/nein, mit/ohne Alias, mit/ohne Konflikt, nur sprachrelevante Typen, versteckte/deaktivierte und Diagnose-Entitäten ein-/ausblenden. Die Filter bleiben im Browser gespeichert.
 - **Sortierung** per Klick auf den Spaltenkopf
 - **Mehrfachauswahl**: mehrere Entitäten auf einmal freigeben oder die Freigabe entziehen
+- **Piktogramm** pro Typ (bzw. das eigene Icon der Entität)
+- **PDF-Export** aller freigegebenen Entitäten, gegliedert nach Bereich → Gerät → Entität mit Aliasen (über den Druckdialog „Als PDF speichern“)
 - Klick auf den Namen öffnet den normalen Home-Assistant-Dialog der Entität
 - Oberfläche auf Deutsch und Englisch (je nach HA-Sprache), auf dem Handy als Karten-Layout
 

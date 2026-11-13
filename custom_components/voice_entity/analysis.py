@@ -107,6 +107,7 @@ class EntityInfo:
     disabled: bool
     in_registry: bool
     exposed: bool
+    icon: str | None = None
     extra: dict[str, Any] = field(default_factory=dict)
 
 

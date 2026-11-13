@@ -1,7 +1,7 @@
 """Constants for Voice Entity Manager."""
 
 DOMAIN = "voice_entity"
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 PANEL_URL_PATH = "voice-entities"
 PANEL_COMPONENT = "voice-entity-panel"

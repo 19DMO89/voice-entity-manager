@@ -119,6 +119,9 @@ def _collect(hass: HomeAssistant, assistant: str) -> list[EntityInfo]:
                 disabled=entry.disabled_by is not None,
                 in_registry=True,
                 exposed=_should_expose(hass, assistant, entity_id),
+                icon=entry.icon
+                or (state.attributes.get("icon") if state else None)
+                or entry.original_icon,
             )
         )
 
@@ -146,6 +149,7 @@ def _collect(hass: HomeAssistant, assistant: str) -> list[EntityInfo]:
                 disabled=False,
                 in_registry=False,
                 exposed=_should_expose(hass, assistant, state.entity_id),
+                icon=state.attributes.get("icon"),
             )
         )
     return result
