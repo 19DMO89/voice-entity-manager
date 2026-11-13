@@ -1,5 +1,7 @@
 # Voice Entity Manager
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070ba?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?business=domi.pospisil%40gmail.com&currency_code=EUR&item_name=Voice%20Entity%20Manager)
+
 Eine Home-Assistant-Integration (installierbar über HACS), die ein eigenes Seitenleisten-Panel **„Sprachentitäten“** hinzufügt. Dort siehst du alle Entitäten mit ihren Sprachassistent-Einstellungen auf einen Blick und kannst sie bearbeiten.
 
 ## Funktionen
@@ -56,3 +58,9 @@ Die Vorschlags- und Konfliktlogik in `analysis.py` kommt ohne Home Assistant aus
 ## Lizenz
 
 MIT, siehe [LICENSE](LICENSE).
+
+## Unterstützen
+
+Wenn dir die Integration gefällt, freue ich mich über einen Kaffee ☕
+
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-PayPal-0070ba?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?business=domi.pospisil%40gmail.com&currency_code=EUR&item_name=Voice%20Entity%20Manager)
